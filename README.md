@@ -2,7 +2,6 @@
 
 # Ashish Prajapati - 3D Portfolio
 
-![Modern 3D Portfolio using React, Three.js and Typescript](/.github/images/img_main.png "Ashish Prajapati 3D Portfolio")
 
 A modern, interactive 3D portfolio built with React, Three.js, and TypeScript. Designed to showcase my projects and expertise in Machine Learning, Natural Language Processing (NLP), and Cybersecurity.
 

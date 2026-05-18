@@ -11,7 +11,7 @@ export const Hero = () => {
       <div
         className={cn(
           styles.paddingX,
-          "absolute inset-0 top-[150px] max-w-7xl mx-auto flex flex-row items-start gap-5",
+          "absolute inset-0 top-[180px] max-w-7xl mx-auto flex flex-row items-start gap-5",
         )}
       >
         {/* Title */}
@@ -30,6 +30,13 @@ export const Hero = () => {
             I build ML, NLP and cybersecurity <br className="sm:block hidden" />
             systems that turn data into working products
           </p>
+          <a
+            href="/resume/Ashish%20Resume.pdf"
+            download
+            className="mt-6 inline-block px-6 py-3 bg-[#915eff] text-white rounded-lg text-[16px] font-medium hover:opacity-90"
+          >
+            Download Resume
+          </a>
         </div>
       </div>
 

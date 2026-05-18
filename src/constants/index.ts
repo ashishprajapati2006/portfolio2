@@ -63,6 +63,11 @@ export const NAV_LINKS = [
     link: null,
   },
   {
+    id: "resume",
+    title: "Resume",
+    link: "/resume/Ashish%20Resume.pdf",
+  },
+  {
     id: "source-code",
     title: "GitHub",
     link: "https://github.com/ashish2772006",

@@ -3,6 +3,7 @@ import { Canvas } from "@react-three/fiber";
 import { Suspense, useEffect, useState } from "react";
 
 import CanvasLoader from "../loader";
+import { preview } from "../../assets";
 
 type ComputersProps = {
   isMobile: boolean;
@@ -30,7 +31,7 @@ const Computers = ({ isMobile }: ComputersProps) => {
       <primitive
         object={computer.scene}
         scale={isMobile ? 0.7 : 0.75}
-        position={isMobile ? [0, -3, -2.2] : [0, -3.25, -1.5]}
+        position={isMobile ? [0, -3, -2.2] : [2, -3.25, -1.5]}
         rotation={[-0.01, -0.2, -0.1]}
       />
     </mesh>
@@ -60,12 +61,21 @@ const ComputersCanvas = () => {
     };
   }, []);
 
+  if (isMobile) {
+    return (
+      <div className="w-full flex justify-center items-center">
+        <img src={preview} alt="computer preview" className="w-[260px] h-auto" />
+      </div>
+    );
+  }
+
   return (
     <Canvas
       frameloop="demand"
-      shadows
+      dpr={[1, 1.5]}
+      shadows={false}
       camera={{ position: [20, 3, 5], fov: 25 }}
-      gl={{ preserveDrawingBuffer: true, alpha: true }}
+      gl={{ preserveDrawingBuffer: true, alpha: true, antialias: false }}
     >
       {/* Canvas Loader show on fallback */}
       <Suspense fallback={<CanvasLoader />}>

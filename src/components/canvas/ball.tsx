@@ -6,27 +6,33 @@ import {
   useTexture,
 } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Suspense } from "react";
+import { Suspense, useState, useEffect } from "react";
 
 import CanvasLoader from "../loader";
 
 type BallProps = {
   imgUrl: string;
+  isMobile: boolean;
+  prefersReducedMotion: boolean;
 };
 
 // Ball
-const Ball = ({ imgUrl }: BallProps) => {
+const Ball = ({ imgUrl, isMobile, prefersReducedMotion }: BallProps) => {
   // use texture from drei
   const [decal] = useTexture([imgUrl]);
 
   return (
-    <Float speed={1.75} rotationIntensity={1} floatIntensity={2}>
+    <Float 
+      speed={prefersReducedMotion ? 0 : isMobile ? 1.2 : 1.75}
+      rotationIntensity={prefersReducedMotion ? 0 : isMobile ? 0.5 : 1}
+      floatIntensity={prefersReducedMotion ? 0 : isMobile ? 1 : 2}
+    >
       {/* Lights */}
-      <ambientLight intensity={0.25} />
+      <ambientLight intensity={isMobile ? 0.35 : 0.25} />
       <directionalLight position={[0, 0, 0.05]} />
       {/* Mesh */}
       <mesh castShadow receiveShadow scale={2.75}>
-        <icosahedronGeometry args={[1, 1]} />
+        <icosahedronGeometry args={[1, isMobile ? 0 : 1]} />
         <meshStandardMaterial
           color="#fff8eb"
           polygonOffset
@@ -49,12 +55,46 @@ type BallCanvasProps = {
 
 // Ball Canvas
 const BallCanvas = ({ icon }: BallCanvasProps) => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    // Check if device is Mobile
+    const mediaQuery = window.matchMedia("(max-width: 600px)");
+    setIsMobile(mediaQuery.matches);
+
+    // Check if user prefers reduced motion
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(motionQuery.matches);
+
+    // Handle changes
+    const handleMediaQueryChange = (event: MediaQueryListEvent) => {
+      setIsMobile(event.matches);
+    };
+
+    const handleMotionPreferenceChange = (event: MediaQueryListEvent) => {
+      setPrefersReducedMotion(event.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleMediaQueryChange);
+    motionQuery.addEventListener("change", handleMotionPreferenceChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleMediaQueryChange);
+      motionQuery.removeEventListener("change", handleMotionPreferenceChange);
+    };
+  }, []);
+
   return (
-    <Canvas frameloop="demand" gl={{ preserveDrawingBuffer: true }}>
+    <Canvas 
+      frameloop="demand"
+      dpr={isMobile ? 1 : [1, 1.5]}
+      gl={{ powerPreference: "high-performance", preserveDrawingBuffer: true, antialias: isMobile ? false : true }}
+    >
       {/* Show canvas loader on fallback */}
       <Suspense fallback={<CanvasLoader />}>
         <OrbitControls enableZoom={false} />
-        <Ball imgUrl={icon} />
+        <Ball imgUrl={icon} isMobile={isMobile} prefersReducedMotion={prefersReducedMotion} />
       </Suspense>
 
       {/* Preload all */}

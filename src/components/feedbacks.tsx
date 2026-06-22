@@ -22,7 +22,7 @@ const HackathonCard = ({
   badge,
 }: HackathonCardProps) => (
   <motion.div
-    variants={fadeIn("", "spring", index * 0.5, 0.75)}
+    variants={fadeIn(undefined, "spring", index * 0.5, 0.75)}
     className="bg-black-200 p-10 rounded-3xl xs:w-[320px] w-full border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.15)]"
   >
     <div className="flex flex-col h-full justify-between">

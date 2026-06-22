@@ -75,7 +75,7 @@ const ComputersCanvas = () => {
       dpr={[1, 1.5]}
       shadows={false}
       camera={{ position: [20, 3, 5], fov: 25 }}
-      gl={{ preserveDrawingBuffer: true, alpha: true, antialias: false }}
+      gl={{ powerPreference: "high-performance", preserveDrawingBuffer: true, alpha: true, antialias: false }}
     >
       {/* Canvas Loader show on fallback */}
       <Suspense fallback={<CanvasLoader />}>

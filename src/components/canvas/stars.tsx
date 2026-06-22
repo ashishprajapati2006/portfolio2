@@ -1,22 +1,28 @@
 import { Points, PointMaterial, Preload } from "@react-three/drei";
-import { Canvas, type PointsProps, useFrame } from "@react-three/fiber";
+import { Canvas, type ThreeElements, useFrame } from "@react-three/fiber";
 import * as random from "maath/random";
-import { useRef, Suspense, useState } from "react";
+import { useRef, Suspense, useState, useEffect } from "react";
 import type { Points as PointsType } from "three";
+import { OffscreenObserver } from "../../hoc";
 
 // Stars
-const Stars = (props: PointsProps) => {
-  const ref = useRef<PointsType | null>(null);
+const Stars = (props: Omit<ThreeElements["points"], "ref"> & { isMobile: boolean }) => {
+  const ref = useRef<any>(null);
+  const { isMobile, ...restProps } = props;
+  // Reduce star count on mobile for performance
+  const starCount = isMobile ? 3000 : 6000;
+  
   // For each star
   const [sphere] = useState(() =>
-    random.inSphere(new Float32Array(6000), { radius: 1.2 }),
+    random.inSphere(new Float32Array(starCount), { radius: 1.2 }),
   );
 
-  // Rotate multiple stars
+  // Rotate multiple stars - reduced speed on mobile
   useFrame((_state, delta) => {
     if (ref.current) {
-      ref.current.rotation.x -= delta / 10;
-      ref.current.rotation.y -= delta / 15;
+      const rotationSpeed = isMobile ? 0.5 : 1;
+      ref.current.rotation.x -= (delta / 10) * rotationSpeed;
+      ref.current.rotation.y -= (delta / 15) * rotationSpeed;
     }
   });
 
@@ -28,14 +34,14 @@ const Stars = (props: PointsProps) => {
         positions={new Float32Array(sphere)}
         stride={3}
         frustumCulled
-        {...props}
+        {...restProps}
       >
         {/* Each point material */}
         <PointMaterial
           transparent
           color="#f272c8"
-          size={0.002}
-          sizeAttentuation
+          size={isMobile ? 0.0025 : 0.002}
+          sizeAttenuation
           depthWrite={false}
         />
       </Points>
@@ -45,18 +51,62 @@ const Stars = (props: PointsProps) => {
 
 // Stars Canvas
 const StarsCanvas = () => {
+  const [isMobile, setIsMobile] = useState(false);
+  const [shouldRender, setShouldRender] = useState(true);
+
+  useEffect(() => {
+    // Check if device is Mobile
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    setIsMobile(mediaQuery.matches);
+
+    // Check if device prefers reduced motion
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    );
+    setShouldRender(!prefersReducedMotion.matches);
+
+    // Handle screen size change
+    const handleMediaQueryChange = (event: MediaQueryListEvent) => {
+      setIsMobile(event.matches);
+    };
+
+    const handleMotionPreferenceChange = (event: MediaQueryListEvent) => {
+      setShouldRender(!event.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleMediaQueryChange);
+    prefersReducedMotion.addEventListener("change", handleMotionPreferenceChange);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleMediaQueryChange);
+      prefersReducedMotion.removeEventListener("change", handleMotionPreferenceChange);
+    };
+  }, []);
+
+  // Don't render if user prefers reduced motion
+  if (!shouldRender) {
+    return <div className="w-full h-auto absolute inset-0 z-[-1] bg-primary" />;
+  }
+
   return (
     <div className="w-full h-auto absolute inset-0 z-[-1]">
-      {/* Canvas */}
-      <Canvas camera={{ position: [0, 0, 1] }}>
-        {/* Show stars if not fallback */}
-        <Suspense fallback={null}>
-          <Stars />
-        </Suspense>
+      <OffscreenObserver heightClass="h-auto absolute inset-0">
+        {/* Canvas */}
+        <Canvas 
+          camera={{ position: [0, 0, 1] }}
+          frameloop="demand"
+          dpr={isMobile ? 1 : [1, 1.5]}
+          gl={{ powerPreference: "high-performance", antialias: false }}
+        >
+          {/* Show stars if not fallback */}
+          <Suspense fallback={null}>
+            <Stars isMobile={isMobile} />
+          </Suspense>
 
-        {/* preload all */}
-        <Preload all />
-      </Canvas>
+          {/* preload all */}
+          <Preload all />
+        </Canvas>
+      </OffscreenObserver>
     </div>
   );
 };

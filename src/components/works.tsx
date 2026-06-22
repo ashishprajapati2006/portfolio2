@@ -29,57 +29,58 @@ const ProjectCard = ({
         scale: 1,
         speed: 450,
       }}
-      className="bg-tertiary p-5 rounded-2xl sm:w-[360px] w-full"
+      className="bg-tertiary p-4 sm:p-5 rounded-2xl w-full sm:w-[360px]"
     >
-      <div className="relative w-full h-[230px]">
+      <div className="relative w-full h-[180px] sm:h-[230px]">
         {/* Work image */}
         <img
           src={image}
           alt={name}
+          loading="lazy"
           className="w-full h-full object-cover rounded-2xl"
         />
 
-        {/* Live Site */}
-        <div className="absolute inset-0 flex justify-end m-3 card-img_hover">
-          <div
+        {/* Live Site & Github */}
+        <div className="absolute inset-0 flex justify-end gap-2 m-2 sm:m-3 card-img_hover opacity-0 hover:opacity-100 transition-opacity duration-300">
+          <button
             onClick={() => window.open(live_site_link, "_blank", "noreferrer")}
-            className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer"
+            className="black-gradient w-8 sm:w-10 h-8 sm:h-10 rounded-full flex justify-center items-center cursor-pointer hover:scale-110 transition-transform active:scale-95 touch-target"
+            aria-label="View live site"
           >
             <img
               src={preview}
               alt="Live Site"
-              title="Live Site"
               className="w-2/3 h-2/3 object-contain"
             />
-          </div>
+          </button>
 
           {/* Github */}
-          <div
+          <button
             onClick={() =>
               window.open(source_code_link, "_blank", "noreferrer")
             }
-            className="black-gradient w-10 h-10 rounded-full flex justify-center items-center cursor-pointer ml-2"
+            className="black-gradient w-8 sm:w-10 h-8 sm:h-10 rounded-full flex justify-center items-center cursor-pointer hover:scale-110 transition-transform active:scale-95 touch-target"
+            aria-label="View source code"
           >
             <img
               src={github}
               alt="Github"
-              title="Github"
               className="w-1/2 h-1/2 object-contain"
             />
-          </div>
+          </button>
         </div>
       </div>
 
       {/* Work Info */}
-      <div className="mt-5">
-        <h3 className="text-white font-bold text-[24px]">{name}</h3>
-        <p className="mt-2 text-secondary text-[14px]">{description}</p>
+      <div className="mt-3 sm:mt-5">
+        <h3 className="text-white font-bold text-[18px] sm:text-[24px] line-clamp-2">{name}</h3>
+        <p className="mt-2 text-secondary text-[13px] sm:text-[14px] line-clamp-3">{description}</p>
       </div>
 
       {/* Work Tag */}
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-3 sm:mt-4 flex flex-wrap gap-2">
         {tags.map((tag, tagIdx) => (
-          <p key={`Tag-${tagIdx}`} className={cn(tag.color, "text-[14px]")}>
+          <p key={`Tag-${tagIdx}`} className={cn(tag.color, "text-[12px] sm:text-[14px]")}>
             #{tag.name}
           </p>
         ))}
@@ -102,8 +103,8 @@ export const Works = () => {
         {/* About */}
         <div className="w-full flex">
           <motion.p
-            variants={fadeIn("", "", 0.1, 1)}
-            className="mt-3 text-secondary text-[17px] max-w-3xl leading-[30px]"
+            variants={fadeIn(undefined, undefined, 0.1, 1)}
+            className="mt-3 text-secondary text-[15px] sm:text-[17px] max-w-3xl leading-[25px] sm:leading-[30px]"
           >
             These projects highlight my work in NLP, computer vision, and
             applied machine learning. Each one was built to solve a practical
@@ -112,7 +113,7 @@ export const Works = () => {
         </div>
 
         {/* Project Card */}
-        <div className="mt-20 flex flex-wrap gap-7">
+        <div className="mt-16 sm:mt-20 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-7 auto-rows-max">
           {PROJECTS.map((project, i) => (
             <ProjectCard key={`project-${i}`} index={i} {...project} />
           ))}

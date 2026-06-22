@@ -17,6 +17,7 @@ export const Contact = () => {
     message: "",
   });
   const [loading, setLoading] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
 
   // handle form change
   const handleChange = (
@@ -88,6 +89,18 @@ export const Contact = () => {
     // validate form
     if (!validateForm()) return false;
 
+    // spam protection check
+    if (honeypot.trim() !== "") {
+      // Quietly succeed to fool spam bots
+      setForm({
+        name: "",
+        email: "",
+        message: "",
+      });
+      toast.success("Thanks for contacting me.");
+      return;
+    }
+
     // show loader
     setLoading(true);
 
@@ -103,7 +116,9 @@ export const Contact = () => {
           to_email: "ashish2772006@gmail.com",
           message: form.message,
         },
-        import.meta.env.VITE_APP_EMAILJS_KEY,
+        {
+          publicKey: import.meta.env.VITE_APP_EMAILJS_KEY,
+        },
       )
       .then(() => toast.success("Thanks for contacting me."))
       .catch((error) => {
@@ -138,6 +153,18 @@ export const Contact = () => {
             onSubmit={handleSubmit}
             className="mt-12 flex flex-col gap-8"
           >
+            {/* Honeypot field for spam protection (hidden from humans) */}
+            <div className="absolute opacity-0 pointer-events-none left-[-9999px] top-[-9999px]" aria-hidden="true">
+              <input
+                type="text"
+                name="user_nickname"
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </div>
+
             {/* Name */}
             <label htmlFor="name" className="flex flex-col">
               <span className="text-white font-medium mb-4">Your Name*</span>
@@ -151,11 +178,12 @@ export const Contact = () => {
                 title="What's your name?"
                 disabled={loading}
                 aria-disabled={loading}
+                aria-describedby="name-error"
                 className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:bg-tertiary/20 disabled:text-white/60"
               />
 
               {/* Invalid Name */}
-              <span className="text-red-400 mt-2 hidden" id="name-error">
+              <span className="text-red-400 mt-2 hidden" id="name-error" role="alert" aria-live="assertive">
                 Invalid Name!
               </span>
             </label>
@@ -173,11 +201,12 @@ export const Contact = () => {
                 title="What's your email?"
                 disabled={loading}
                 aria-disabled={loading}
+                aria-describedby="email-error"
                 className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:bg-tertiary/20 disabled:text-white/60"
               />
 
               {/* Invalid Email */}
-              <span className="text-red-400 mt-2 hidden" id="email-error">
+              <span className="text-red-400 mt-2 hidden" id="email-error" role="alert" aria-live="assertive">
                 Invalid E-mail!
               </span>
             </label>
@@ -195,11 +224,12 @@ export const Contact = () => {
                 title="What do you want to say?"
                 disabled={loading}
                 aria-disabled={loading}
+                aria-describedby="message-error"
                 className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:bg-tertiary/20 disabled:text-white/60 disabled:resize-none"
               />
 
               {/* Invalid Message */}
-              <span className="text-red-400 mt-2 hidden" id="message-error">
+              <span className="text-red-400 mt-2 hidden" id="message-error" role="alert" aria-live="assertive">
                 Invalid Message!
               </span>
             </label>

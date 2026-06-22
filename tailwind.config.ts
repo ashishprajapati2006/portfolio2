@@ -21,7 +21,34 @@ export default {
       backgroundImage: {
         "hero-pattern": "url('/src/assets/herobg.png')",
       },
+      transitionProperty: {
+        "touch": "transform, opacity",
+      },
+      transitionDuration: {
+        "300": "300ms",
+      },
     },
   },
-  plugins: [],
+  plugins: [
+    // Add support for touch-target utility
+    ({ addUtilities }: any) => {
+      addUtilities({
+        ".touch-target": {
+          "@apply min-h-[44px] min-w-[44px]": {},
+        },
+        ".line-clamp-3": {
+          overflow: "hidden",
+          display: "-webkit-box",
+          "-webkit-line-clamp": "3",
+          "-webkit-box-orient": "vertical",
+        },
+        ".line-clamp-2": {
+          overflow: "hidden",
+          display: "-webkit-box",
+          "-webkit-line-clamp": "2",
+          "-webkit-box-orient": "vertical",
+        },
+      });
+    },
+  ],
 };

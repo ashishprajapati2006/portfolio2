@@ -13,9 +13,42 @@
   color-scheme: dark;
 }
 
+/* Mobile-friendly optimizations */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Disable tap highlight on mobile */
+button, a, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Optimize images on mobile */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Improve text readability */
+@media (max-width: 600px) {
+  body {
+    font-size: 16px; /* Prevents zoom on mobile input focus */
+  }
+}
+
 @media (pointer: fine) {
   body, a, button, input, textarea, select {
     cursor: none !important;
+  }
+}
+
+/* Improve touch targets for mobile */
+@media (max-width: 768px) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
   }
 }
 
@@ -118,6 +151,28 @@
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+/* Disable pointer-events on main media queries for performance */
+@media (pointer: coarse) {
+  * {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  input, textarea {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* canvas- styles */

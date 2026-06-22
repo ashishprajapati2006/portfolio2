@@ -1,4 +1,5 @@
 import { SectionWrapper } from "./section-wrapper";
+import { OffscreenObserver } from "./offscreen-observer";
 
-// Export Section Wrapper
-export { SectionWrapper };
+// Export HOCs
+export { SectionWrapper, OffscreenObserver };

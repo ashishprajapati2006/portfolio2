@@ -1,5 +1,4 @@
-import emailjs from "@emailjs/browser";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, type FormEvent, type ChangeEvent } from "react";
 import { toast } from "sonner";
 
@@ -16,8 +15,13 @@ export const Contact = () => {
     email: "",
     message: "",
   });
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
   const [loading, setLoading] = useState(false);
-  const [honeypot, setHoneypot] = useState("");
+  const [honey, setHoney] = useState("");
 
   // handle form change
   const handleChange = (
@@ -26,114 +30,108 @@ export const Contact = () => {
     const { name, value } = e.target;
 
     setForm({ ...form, [name]: value });
+    
+    // Clear field-specific error as user types
+    if (errors[name as keyof typeof errors]) {
+      setErrors({ ...errors, [name]: "" });
+    }
   };
 
   // validate form on submit
   const validateForm = () => {
-    // form fields
     const { name, email, message } = form;
-
-    type Current = {
-      name: boolean;
-      email: boolean;
-      message: boolean;
-    };
-
-    // Error message
-    const nameError = document.querySelector("#name-error")!;
-    const emailError = document.querySelector("#email-error")!;
-    const messageError = document.querySelector("#message-error")!;
-    const current: Current = { name: false, email: false, message: false };
+    const newErrors = { name: "", email: "", message: "" };
+    let isValid = true;
 
     // validate name
-    if (name.trim().length < 3) {
-      nameError.classList.remove("hidden");
-      current["name"] = false;
-    } else {
-      nameError.classList.add("hidden");
-      current["name"] = true;
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      newErrors.name = "Name is required.";
+      isValid = false;
+    } else if (trimmedName.length < 2) {
+      newErrors.name = "Name must be at least 2 characters.";
+      isValid = false;
+    } else if (trimmedName.length > 100) {
+      newErrors.name = "Name cannot exceed 100 characters.";
+      isValid = false;
     }
 
-    const email_regex =
+    // validate email
+    const emailRegex =
       /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-    // valiate email
-    if (!email.trim().toLowerCase().match(email_regex)) {
-      emailError.classList.remove("hidden");
-      current["email"] = false;
-    } else {
-      emailError.classList.add("hidden");
-      current["email"] = true;
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) {
+      newErrors.email = "Email is required.";
+      isValid = false;
+    } else if (!emailRegex.test(trimmedEmail.toLowerCase())) {
+      newErrors.email = "Please enter a valid email address.";
+      isValid = false;
     }
 
     // validate message
-    if (message.trim().length < 5) {
-      messageError.classList.remove("hidden");
-      current["message"] = false;
-    } else {
-      messageError.classList.add("hidden");
-      current["message"] = true;
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage) {
+      newErrors.message = "Message is required.";
+      isValid = false;
+    } else if (trimmedMessage.length < 10) {
+      newErrors.message = "Message must be at least 10 characters.";
+      isValid = false;
+    } else if (trimmedMessage.length > 2000) {
+      newErrors.message = "Message cannot exceed 2000 characters.";
+      isValid = false;
     }
 
-    // True if all fields are validated
-    return Object.keys(current).every(
-      (k) => current[k as keyof typeof current],
-    );
+    setErrors(newErrors);
+    return isValid;
   };
 
   // handle form submit
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     // prevent default page reload
     e.preventDefault();
 
     // validate form
-    if (!validateForm()) return false;
-
-    // spam protection check
-    if (honeypot.trim() !== "") {
-      // Quietly succeed to fool spam bots
-      setForm({
-        name: "",
-        email: "",
-        message: "",
-      });
-      toast.success("Thanks for contacting me.");
-      return;
-    }
+    if (!validateForm()) return;
 
     // show loader
     setLoading(true);
 
-    // send email
-    emailjs
-      .send(
-        import.meta.env.VITE_APP_SERVICE_ID,
-        import.meta.env.VITE_APP_TEMPLATE_ID,
-        {
-          from_name: form.name,
-          to_name: "Ashish Prajapati",
-          from_email: form.email.trim().toLowerCase(),
-          to_email: "ashish2772006@gmail.com",
+    try {
+      // POST to secure backend endpoint
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
           message: form.message,
-        },
-        {
-          publicKey: import.meta.env.VITE_APP_EMAILJS_KEY,
-        },
-      )
-      .then(() => toast.success("Thanks for contacting me."))
-      .catch((error) => {
-        // Error handle
-        console.log("[CONTACT_ERROR]: ", error);
-        toast.error("Something went wrong.");
-      })
-      .finally(() => {
-        setLoading(false);
+          honey: honey, // hidden honeypot spam-bot field
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        toast.success(data.message || "Thanks for contacting me.");
+        
+        // Reset states
         setForm({
           name: "",
           email: "",
           message: "",
         });
-      });
+        setHoney("");
+      } else {
+        toast.error(data.error || "Something went wrong.");
+      }
+    } catch (error) {
+      console.error("[CONTACT_SUBMIT_ERROR]: ", error);
+      toast.error("Network error. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -153,17 +151,6 @@ export const Contact = () => {
             onSubmit={handleSubmit}
             className="mt-12 flex flex-col gap-8"
           >
-            {/* Honeypot field for spam protection (hidden from humans) */}
-            <div className="absolute opacity-0 pointer-events-none left-[-9999px] top-[-9999px]" aria-hidden="true">
-              <input
-                type="text"
-                name="user_nickname"
-                value={honeypot}
-                onChange={(e) => setHoneypot(e.target.value)}
-                tabIndex={-1}
-                autoComplete="off"
-              />
-            </div>
 
             {/* Name */}
             <label htmlFor="name" className="flex flex-col">
@@ -178,14 +165,28 @@ export const Contact = () => {
                 title="What's your name?"
                 disabled={loading}
                 aria-disabled={loading}
-                aria-describedby="name-error"
-                className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:bg-tertiary/20 disabled:text-white/60"
+                aria-invalid={!!errors.name}
+                aria-describedby={errors.name ? "name-error" : undefined}
+                className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border border-transparent focus:border-[#915ecc] focus:ring-1 focus:ring-[#915ecc] transition-all duration-300 font-medium disabled:bg-tertiary/20 disabled:text-white/60 disabled:cursor-not-allowed"
               />
 
               {/* Invalid Name */}
-              <span className="text-red-400 mt-2 hidden" id="name-error" role="alert" aria-live="assertive">
-                Invalid Name!
-              </span>
+              <AnimatePresence>
+                {errors.name && (
+                  <motion.span
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-red-400 mt-2 text-sm"
+                    id="name-error"
+                    role="alert"
+                    aria-live="assertive"
+                  >
+                    {errors.name}
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </label>
 
             {/* Email */}
@@ -201,14 +202,28 @@ export const Contact = () => {
                 title="What's your email?"
                 disabled={loading}
                 aria-disabled={loading}
-                aria-describedby="email-error"
-                className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:bg-tertiary/20 disabled:text-white/60"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? "email-error" : undefined}
+                className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border border-transparent focus:border-[#915ecc] focus:ring-1 focus:ring-[#915ecc] transition-all duration-300 font-medium disabled:bg-tertiary/20 disabled:text-white/60 disabled:cursor-not-allowed"
               />
 
               {/* Invalid Email */}
-              <span className="text-red-400 mt-2 hidden" id="email-error" role="alert" aria-live="assertive">
-                Invalid E-mail!
-              </span>
+              <AnimatePresence>
+                {errors.email && (
+                  <motion.span
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-red-400 mt-2 text-sm"
+                    id="email-error"
+                    role="alert"
+                    aria-live="assertive"
+                  >
+                    {errors.email}
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </label>
 
             {/* Message */}
@@ -224,27 +239,64 @@ export const Contact = () => {
                 title="What do you want to say?"
                 disabled={loading}
                 aria-disabled={loading}
-                aria-describedby="message-error"
-                className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border-none font-medium disabled:bg-tertiary/20 disabled:text-white/60 disabled:resize-none"
+                aria-invalid={!!errors.message}
+                aria-describedby={errors.message ? "message-error" : undefined}
+                className="bg-tertiary py-4 px-6 placeholder:text-secondary text-white rounded-lg outline-none border border-transparent focus:border-[#915ecc] focus:ring-1 focus:ring-[#915ecc] transition-all duration-300 font-medium disabled:bg-tertiary/20 disabled:text-white/60 disabled:cursor-not-allowed disabled:resize-none"
               />
 
               {/* Invalid Message */}
-              <span className="text-red-400 mt-2 hidden" id="message-error" role="alert" aria-live="assertive">
-                Invalid Message!
-              </span>
+              <AnimatePresence>
+                {errors.message && (
+                  <motion.span
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-red-400 mt-2 text-sm"
+                    id="message-error"
+                    role="alert"
+                    aria-live="assertive"
+                  >
+                    {errors.message}
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </label>
 
             {/* Submit */}
-            <button
+            <motion.button
               type="submit"
               title={loading ? "Sending..." : "Send"}
-              className="bg-tertiary py-3 px-8 outline-none w-fit text-white font-bold shadow-md shadow-primary rounded-xl disabled:bg-tertiary/20 disabled:text-white/60"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="bg-tertiary py-3 px-8 outline-none w-fit text-white font-bold shadow-md shadow-primary rounded-xl disabled:bg-tertiary/40 disabled:text-white/60 disabled:cursor-not-allowed flex items-center justify-center gap-3 transition-all duration-300 border border-transparent focus:border-[#915ecc] focus:ring-1 focus:ring-[#915ecc]"
               disabled={loading}
               aria-disabled={loading}
             >
-              {/* check loader state */}
-              {loading ? "Sending..." : "Send"}
-            </button>
+              {loading ? (
+                <>
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <span>Sending...</span>
+                </>
+              ) : (
+                <span>Send</span>
+              )}
+            </motion.button>
+
+            {/* Honeypot field for spam protection (hidden from humans, at bottom to avoid autofill issues) */}
+            <div style={{ display: "none" }} aria-hidden="true">
+              <input
+                type="text"
+                name="honey"
+                value={honey}
+                onChange={(e) => setHoney(e.target.value)}
+                tabIndex={-1}
+                autoComplete="new-password"
+              />
+            </div>
           </form>
         </motion.div>
 

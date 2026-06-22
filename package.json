@@ -39,7 +39,6 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@emailjs/browser": "^4.4.1",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "clsx": "^2.1.1",
@@ -51,6 +50,7 @@
     "react-router-dom": "^7.14.2",
     "react-tilt": "^1.0.2",
     "react-vertical-timeline-component": "^4.0.0",
+    "resend": "^6.14.0",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "three": "^0.184.0",
@@ -61,6 +61,7 @@
     "@types/react-dom": "^19.2.3",
     "@types/react-vertical-timeline-component": "^3.3.6",
     "@types/tailwindcss": "^3.1.0",
+    "@vercel/node": "^5.8.17",
     "@vitejs/plugin-react": "^6.0.1",
     "autoprefixer": "^10.5.0",
     "postcss": "^8.5.14",

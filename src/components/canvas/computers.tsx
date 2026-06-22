@@ -30,7 +30,7 @@ const Computers = ({ isMobile }: ComputersProps) => {
       />
       <primitive
         object={computer.scene}
-        scale={isMobile ? 0.7 : 0.75}
+        scale={isMobile ? 0.6 : 0.75}
         position={isMobile ? [0, -3, -2.2] : [2, -3.25, -1.5]}
         rotation={[-0.01, -0.2, -0.1]}
       />
@@ -60,14 +60,6 @@ const ComputersCanvas = () => {
       mediaQuery.removeEventListener("change", handleMediaQueryChange);
     };
   }, []);
-
-  if (isMobile) {
-    return (
-      <div className="w-full flex justify-center items-center">
-        <img src={preview} alt="computer preview" className="w-[260px] h-auto" />
-      </div>
-    );
-  }
 
   return (
     <Canvas

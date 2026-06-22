@@ -1,7 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { BallCanvas } from "./canvas";
 import { TECHNOLOGIES } from "../constants";
 import { SectionWrapper } from "../hoc";
+import { styles } from "../styles";
+import { textVariant } from "../utils/motion";
 
 type TechCardProps = {
   name: string;
@@ -43,67 +46,27 @@ const TechCard = ({ name, icon }: TechCardProps) => {
 
 // Technologies
 export const Tech = () => {
-  const [isMobile, setIsMobile] = useState(false);
+  return (
+    <SectionWrapper idName="tech">
+      <>
+        {/* Title */}
+        <motion.div variants={textVariant()}>
+          <p className={styles.sectionSubText}>My Tech Stack</p>
+          <h2 className={styles.sectionHeadText}>Skills.</h2>
+        </motion.div>
 
-  useEffect(() => {
-    // Check if device is Mobile
-    const mediaQuery = window.matchMedia("(max-width: 600px)");
-    setIsMobile(mediaQuery.matches);
-
-    // Handle changes
-    const handleMediaQueryChange = (event: MediaQueryListEvent) => {
-      setIsMobile(event.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleMediaQueryChange);
-
-    return () => {
-      mediaQuery.removeEventListener("change", handleMediaQueryChange);
-    };
-  }, []);
-
-  if (isMobile) {
-    // Simplified grid layout for mobile
-    return (
-      <SectionWrapper>
-        <div className="grid grid-cols-3 sm:grid-cols-4 gap-4 justify-center">
+        {/* 3D Ball Canvas Grid (hover/touch to load WebGL context) */}
+        <div className="flex flex-row flex-wrap justify-center gap-6 sm:gap-8 md:gap-10 mt-14 sm:mt-16">
+          {/* Iterate over each technology */}
           {TECHNOLOGIES.map((technology) => (
-            <div 
-              className="flex flex-col items-center gap-2" 
-              key={technology.name}
-              title={technology.name}
-            >
-              <div className="h-16 w-16 sm:h-20 sm:w-20">
-                <img
-                  src={technology.icon}
-                  alt={technology.name}
-                  loading="lazy"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <p className="text-center text-xs text-secondary line-clamp-2">
-                {technology.name}
-              </p>
-            </div>
+            <TechCard 
+              key={technology.name} 
+              name={technology.name} 
+              icon={technology.icon} 
+            />
           ))}
         </div>
-      </SectionWrapper>
-    );
-  }
-
-  // 3D Ball Canvas for desktop (hover to load WebGL context)
-  return (
-    <SectionWrapper>
-      <div className="flex flex-row flex-wrap justify-center gap-8 md:gap-10">
-        {/* Iterate over each technology */}
-        {TECHNOLOGIES.map((technology) => (
-          <TechCard 
-            key={technology.name} 
-            name={technology.name} 
-            icon={technology.icon} 
-          />
-        ))}
-      </div>
+      </>
     </SectionWrapper>
   );
 };

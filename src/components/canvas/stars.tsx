@@ -93,7 +93,7 @@ const StarsCanvas = () => {
       {/* Canvas */}
       <Canvas 
         camera={{ position: [0, 0, 1] }}
-        frameloop="demand"
+        frameloop="always"
         dpr={isMobile ? 1 : [1, 1.5]}
         gl={{ powerPreference: "high-performance", antialias: false }}
       >

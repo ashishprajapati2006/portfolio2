@@ -41,7 +41,7 @@ const ProjectCard = ({
         />
 
         {/* Live Site & Github */}
-        <div className="absolute inset-0 flex justify-end gap-2 m-2 sm:m-3 card-img_hover opacity-0 hover:opacity-100 transition-opacity duration-300">
+        <div className="absolute inset-0 flex justify-end gap-2 m-2 sm:m-3 card-img_hover opacity-100 transition-opacity duration-300">
           <button
             onClick={() => window.open(live_site_link, "_blank", "noreferrer")}
             className="black-gradient w-8 sm:w-10 h-8 sm:h-10 rounded-full flex justify-center items-center cursor-pointer hover:scale-110 transition-transform active:scale-95 touch-target"

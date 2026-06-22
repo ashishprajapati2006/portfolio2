@@ -31,6 +31,7 @@ const App = () => {
       <CustomCursor />
       <Banner hide={hide} setHide={setHide} />
       <div className="relative z-0 bg-primary">
+        <StarsCanvas />
         <div className="bg-hero-pattern bg-cover bg-no-repeat bg-center">
           <Navbar hide={hide} />
           <Hero />
@@ -45,7 +46,6 @@ const App = () => {
           {/* Contact */}
           <div className="relative z-0">
             <Contact />
-            <StarsCanvas />
           </div>
         </Suspense>
         <Footer />

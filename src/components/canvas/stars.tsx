@@ -89,24 +89,22 @@ const StarsCanvas = () => {
   }
 
   return (
-    <div className="w-full h-auto absolute inset-0 z-[-1]">
-      <OffscreenObserver heightClass="h-auto absolute inset-0">
-        {/* Canvas */}
-        <Canvas 
-          camera={{ position: [0, 0, 1] }}
-          frameloop="demand"
-          dpr={isMobile ? 1 : [1, 1.5]}
-          gl={{ powerPreference: "high-performance", antialias: false }}
-        >
-          {/* Show stars if not fallback */}
-          <Suspense fallback={null}>
-            <Stars isMobile={isMobile} />
-          </Suspense>
+    <div className="w-full h-screen fixed inset-0 z-[-1]">
+      {/* Canvas */}
+      <Canvas 
+        camera={{ position: [0, 0, 1] }}
+        frameloop="demand"
+        dpr={isMobile ? 1 : [1, 1.5]}
+        gl={{ powerPreference: "high-performance", antialias: false }}
+      >
+        {/* Show stars if not fallback */}
+        <Suspense fallback={null}>
+          <Stars isMobile={isMobile} />
+        </Suspense>
 
-          {/* preload all */}
-          <Preload all />
-        </Canvas>
-      </OffscreenObserver>
+        {/* preload all */}
+        <Preload all />
+      </Canvas>
     </div>
   );
 };

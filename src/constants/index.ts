@@ -25,9 +25,6 @@ import {
   backend,
   creator,
   web,
-  project1,
-  project2,
-  project3,
   linkedin,
   github,
 } from "../assets";
@@ -70,7 +67,7 @@ export const NAV_LINKS = [
   {
     id: "source-code",
     title: "GitHub",
-    link: "https://github.com/ashish2772006",
+    link: "https://github.com/ashishprajapati2006",
   },
 ] as const;
 

@@ -11,17 +11,17 @@ export const Hero = () => {
       <div
         className={cn(
           styles.paddingX,
-          "absolute inset-0 top-[120px] sm:top-[180px] max-w-7xl mx-auto flex flex-col sm:flex-row items-start gap-3 sm:gap-5 px-4 sm:px-0"
+          "absolute inset-0 top-[90px] sm:top-[120px] max-w-7xl mx-auto flex flex-col sm:flex-row items-start gap-3 sm:gap-5 px-4 sm:px-0 z-10 pointer-events-none"
         )}
       >
         {/* Title */}
-        <div className="flex flex-col justify-center items-center mt-3 sm:mt-5">
+        <div className="flex flex-col justify-center items-center mt-3 sm:mt-5 pointer-events-auto">
           <div className="w-4 sm:w-5 h-4 sm:h-5 rounded-full bg-[#915eff]" />
           <div className="w-1 sm:h-80 h-40 violet-gradient" />
         </div>
 
         {/* About Me */}
-        <div className="flex-1 max-w-2xl">
+        <div className="flex-1 max-w-2xl pointer-events-auto">
           <h1 className={cn(styles.heroHeadText, "text-white leading-tight")}>
             Hi, I'm <br className="hidden sm:block" />
             <span className="text-[#915eff] block sm:inline">Ashish Prajapati</span>
@@ -41,7 +41,9 @@ export const Hero = () => {
       </div>
 
       {/* Computer Model */}
-      <ComputersCanvas />
+      <div className="absolute right-0 top-1/2 -translate-y-1/2 w-full lg:w-[55%] h-[65%] lg:h-[80%] z-0">
+        <ComputersCanvas />
+      </div>
 
       {/* Scroll to about section */}
       <div className="absolute bottom-8 sm:bottom-10 w-full flex justify-center items-center">

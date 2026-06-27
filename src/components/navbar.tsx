@@ -50,7 +50,7 @@ export const Navbar = ({ hide }: NavbarProps) => {
     <nav
       className={cn(
         styles.paddingX,
-        "w-full flex items-center py-3 sm:py-5 fixed top-0 z-20 bg-primary transition-all duration-300",
+        "w-full flex items-center py-2 sm:py-3 fixed top-0 z-20 bg-primary transition-all duration-300",
         isAtBottom || hide ? "mt-0" : "mt-20"
       )}
     >
@@ -68,7 +68,7 @@ export const Navbar = ({ hide }: NavbarProps) => {
           <img 
             src="/logo.png" 
             alt="Logo" 
-            className="h-[80px] sm:h-[120px] w-auto object-contain" 
+            className="h-[45px] sm:h-[60px] w-auto object-contain" 
           />
           <p className="text-white text-[14px] sm:text-[18px] font-bold cursor-pointer hidden xs:flex flex-wrap">
             <span>Ashish</span>

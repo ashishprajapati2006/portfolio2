@@ -239,6 +239,32 @@ export const CERTIFICATIONS = [
 // Projects
 export const PROJECTS = [
   {
+    name: "EcoPilot AI",
+    description:
+      "Coordinate your path to Net Zero with AI-driven carbon calculation, utility bill scanning (Gemini Vision OCR), visual appliance audits, and conversational coaching to reduce environmental footprint.",
+    tags: [
+      {
+        name: "Next.js",
+        color: "blue-text-gradient",
+      },
+      {
+        name: "Gemini API",
+        color: "green-text-gradient",
+      },
+      {
+        name: "TypeScript",
+        color: "pink-text-gradient",
+      },
+      {
+        name: "TailwindCSS",
+        color: "blue-text-gradient",
+      },
+    ],
+    image: "/img/Ecopilot ai.png",
+    source_code_link: "https://github.com/ashishprajapati2006/Carbon-Footprint",
+    live_site_link: "https://carbon-footprint-dun.vercel.app/",
+  },
+  {
     name: "Multi-Language Translator",
     description:
       "Combines fine-tuned mBART (Transformer) and custom LSTM Seq2Seq for accurate and flexible translation. Transfer learning implementation with pre-trained mBART for domain-specific translation, Flask and Streamlit apps with Hugging Face integration",
